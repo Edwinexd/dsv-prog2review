@@ -1,10 +1,17 @@
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 const GPT_MODEL = "gpt-5";
+
+// Lazy initialization to avoid requiring API key at build time
+let _openai: OpenAI | null = null;
+function getOpenAI(): OpenAI {
+  if (!_openai) {
+    _openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+  }
+  return _openai;
+}
 
 interface LanguageInfo {
   name: string;
@@ -252,7 +259,7 @@ export async function reviewCode(
 
   let response;
   try {
-    response = await openai.chat.completions.create({
+    response = await getOpenAI().chat.completions.create({
       model: GPT_MODEL,
       messages: [
         { role: "system", content: systemPrompt },
