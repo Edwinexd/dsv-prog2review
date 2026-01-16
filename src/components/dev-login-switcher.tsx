@@ -58,10 +58,24 @@ export function DevLoginSwitcher() {
     router.refresh();
   }
 
-  if (process.env.NODE_ENV === "production") {
-    return null;
+  const isProduction = process.env.NEXT_PUBLIC_AUTH_MODE === "saml";
+
+  // Production: just show username, no logout (SAML handles auth)
+  if (isProduction) {
+    if (!session) return null;
+    return (
+      <Button variant="outline" size="sm" className="cursor-default">
+        {session.isAdmin ? (
+          <Shield className="mr-2 h-4 w-4" />
+        ) : (
+          <User className="mr-2 h-4 w-4" />
+        )}
+        {session.username}
+      </Button>
+    );
   }
 
+  // Development: full login switcher
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
