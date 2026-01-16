@@ -70,4 +70,4 @@ src/
 
 ## License
 
-Internal use only - Stockholm University DSV.
+AGPL-3.0 License. See [LICENSE](LICENSE) for details.
