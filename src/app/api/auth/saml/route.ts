@@ -14,6 +14,13 @@ export async function GET(request: NextRequest) {
   // Read SAML attributes from Apache headers (hardcoded header name)
   const eppn = request.headers.get('x-shib-eppn') || request.headers.get('x-remote-user');
 
+  // Debug logging
+  console.log('[SAML] Headers received:', {
+    'x-shib-eppn': request.headers.get('x-shib-eppn'),
+    'x-remote-user': request.headers.get('x-remote-user'),
+    eppn,
+  });
+
   if (!eppn) {
     // No SAML session - redirect to Shibboleth login
     const baseUrl = process.env.BASE_URL || 'https://prog2review.dsv.su.se';
@@ -32,6 +39,12 @@ export async function GET(request: NextRequest) {
   // Create JWT session with full eppn (e.g., "bbohm@SU.SE")
   const token = await createSession(username);
   const userIsAdmin = isAdmin(username);
+
+  console.log('[SAML] Session created:', {
+    username,
+    userIsAdmin,
+    adminUsernames: process.env.ADMIN_USERNAMES,
+  });
 
   // Redirect to appropriate page
   const redirectUrl = userIsAdmin ? '/admin' : '/';
