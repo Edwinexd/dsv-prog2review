@@ -1,14 +1,12 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: prog2review
+namespace: vival
 
 resources:
   - ../../base
   - secrets.yaml
 
 images:
-  - name: ghcr.io/edwinexd/dsv-prog2review
-    newTag: latest
-  - name: ghcr.io/edwinexd/dsv-prog2review-compiler
+  - name: ghcr.io/edwinexd/vival
     newTag: latest

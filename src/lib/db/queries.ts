@@ -44,10 +44,6 @@ export interface Submission {
   status: string;
   uploaded_at: Date;
   uploaded_by: string;
-  compile_success: boolean | null;
-  compile_output: string | null;
-  compile_errors: unknown;
-  compiled_at: Date | null;
 }
 
 export interface Review {
@@ -348,26 +344,6 @@ export async function updateSubmissionStatus(id: string, status: string): Promis
   const sql = getDb();
   const result = await sql<Submission[]>`
     UPDATE submissions SET status = ${status} WHERE id = ${id} RETURNING *
-  `;
-  return result[0] ?? null;
-}
-
-export async function updateSubmissionCompilation(
-  id: string,
-  success: boolean,
-  output: string,
-  errors: JsonValue
-): Promise<Submission | null> {
-  const sql = getDb();
-  const result = await sql<Submission[]>`
-    UPDATE submissions
-    SET
-      compile_success = ${success},
-      compile_output = ${output},
-      compile_errors = ${sql.json(errors)},
-      compiled_at = NOW()
-    WHERE id = ${id}
-    RETURNING *
   `;
   return result[0] ?? null;
 }

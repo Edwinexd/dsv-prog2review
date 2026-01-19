@@ -1,6 +1,6 @@
-# prog2review
+# Vival
 
-Automated code review and oral examination system for Stockholm University programming courses.
+AI-powered code review and oral examination system.
 
 ## Tech Stack
 
@@ -52,7 +52,7 @@ npm run db:migrate
 
 # Docker
 docker-compose up -d    # Local dev with Postgres + Redis
-docker build -t prog2review .
+docker build -t vival .
 
 # Kubernetes
 kubectl apply -k k8s/overlays/dev
@@ -64,10 +64,10 @@ terraform plan -var-file=terraform.tfvars
 terraform apply -var-file=terraform.tfvars
 
 # Local Database (Docker)
-docker exec prog2review-postgres psql -U prog2review -d prog2review -c "SQL"
+docker exec vival-postgres psql -U vival -d vival -c "SQL"
 
 # Production Access
-ssh prog2review        # SSH to production server
+ssh prog2review        # SSH to production server (domain pending rename)
 sudo su                # Switch to root (required for full access)
 ```
 
@@ -76,7 +76,6 @@ sudo su                # Switch to root (required for full access)
 See `.env.example` for required variables:
 - `DATABASE_URL` - PostgreSQL connection
 - `REDIS_URL` - Redis connection
-- `COMPILER_URL` - Java compiler service (default: http://localhost:3001)
 - `OPENAI_API_KEY` - GPT-5 access
 - `ELEVENLABS_API_KEY` - Voice agent access
 - `JWT_SECRET` - Secret for JWT signing (generate random string)
@@ -90,10 +89,6 @@ terraform/            # GitHub environments and secrets (WireGuard VPN + kubectl
 ├── variables.tf      # Input variables
 ├── outputs.tf        # Output values
 └── terraform.tfvars.example
-compiler/             # Sandboxed Java compiler container
-├── Dockerfile        # Alpine + OpenJDK 21 + Node.js
-├── server.ts         # HTTP /compile endpoint
-└── package.json
 src/
 ├── app/              # Next.js App Router pages and API routes
 │   ├── (student)/    # Student portal (route group with top nav)
@@ -107,7 +102,7 @@ src/
 │   └── footer.tsx    # Shared footer
 ├── lib/              # Core libraries (db, redis, auth, openai, elevenlabs)
 ├── middleware.ts     # Route protection (auth checks)
-├── services/         # Business logic (reviewService, compilationService)
+├── services/         # Business logic (reviewService, gradingService)
 └── types/            # TypeScript types
 ```
 
@@ -186,30 +181,6 @@ The system automatically detects the programming language from the file extensio
 - GPT system prompt and user prompt are dynamically built for the detected language
 - Review feedback uses language-appropriate conventions and idioms
 
-## Java Compilation Service
-
-Sandboxed Java compilation check that runs **only for .java files** before GPT review. Uses a separate Docker container (`java-compiler`) with security constraints. Non-Java submissions skip compilation entirely.
-
-**Container security:**
-- `read_only: true` root filesystem
-- `tmpfs: /tmp:size=32M` for compilation workspace
-- `cap_drop: ALL` - no capabilities
-- `cpus: 0.5`, `mem_limit: 256m`
-- 30s compilation timeout
-
-**Compilation Service** (`src/services/compilationService.ts`):
-- `parseFilesFromContent(content, defaultFilename)` - Extract .java files using `// ===== filename =====` markers
-- `compileSubmission(submissionId)` - Compile submission and store results
-- `formatCompilationErrorsForReview(result)` - Format errors for GPT context
-
-**Database fields** (submissions table):
-- `compile_success` - Boolean compilation result
-- `compile_output` - Raw compiler output
-- `compile_errors` - JSONB array of parsed errors (file, line, message, type)
-- `compiled_at` - Timestamp
-
-**Flow:** Compilation runs first in `processSubmissionReview()`. If compilation fails, errors are prepended to GPT prompt for context. Review continues regardless (pedagogical value).
-
 ## OpenAI Integration
 
 The GPT integration (`src/lib/openai/index.ts`) handles code review and discussion plan generation.
@@ -222,7 +193,6 @@ The GPT integration (`src/lib/openai/index.ts`) handles code review and discussi
 **Main functions:**
 - `reviewCode(code, filename, customPrompt)` - Reviews code (auto-detects language from filename) and returns structured result
 - `getCondensedDiscussionPlan(discussionPlan)` - Condenses plan for ElevenLabs voice context
-- `isJavaFile(filename)` - Check if file is Java (used to conditionally run compilation)
 
 **Review Service** (`src/services/reviewService.ts`):
 - `processSubmissionReview(submissionId)` - Full review workflow with semaphore management

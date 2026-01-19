@@ -1,6 +1,6 @@
 import postgres from "postgres";
 
-const DATABASE_URL = process.env.DATABASE_URL || "postgres://localhost:5432/prog2review";
+const DATABASE_URL = process.env.DATABASE_URL || "postgres://localhost:5432/vival";
 
 let sql: postgres.Sql | null = null;
 

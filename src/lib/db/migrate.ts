@@ -9,7 +9,7 @@ config({ path: ".env.local" });
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 async function migrate(): Promise<void> {
-  const databaseUrl = process.env.DATABASE_URL || "postgres://localhost:5432/prog2review";
+  const databaseUrl = process.env.DATABASE_URL || "postgres://localhost:5432/vival";
 
   console.log("Connecting to database...");
 

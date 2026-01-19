@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: prog2review-app
-  namespace: prog2review
+  name: vival-app
+  namespace: vival
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: prog2review-app
+      app: vival-app
   template:
     metadata:
       labels:
-        app: prog2review-app
+        app: vival-app
     spec:
       containers:
         - name: app
-          image: ghcr.io/edwinexd/dsv-prog2review:latest
+          image: ghcr.io/edwinexd/vival:latest
           ports:
             - containerPort: 3000
           env:
@@ -26,55 +26,53 @@ spec:
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  name: prog2review-secrets
+                  name: vival-secrets
                   key: DATABASE_URL
             - name: REDIS_URL
               value: "redis://redis:6379"
             - name: ID_GENERATOR_URL
               value: "http://id-generator:8080"
-            - name: COMPILER_URL
-              value: "http://java-compiler:3001"
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: prog2review-secrets
+                  name: vival-secrets
                   key: JWT_SECRET
             - name: ADMIN_USERNAMES
               valueFrom:
                 secretKeyRef:
-                  name: prog2review-secrets
+                  name: vival-secrets
                   key: ADMIN_USERNAMES
             - name: OPENAI_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: prog2review-secrets
+                  name: vival-secrets
                   key: OPENAI_API_KEY
             - name: ELEVENLABS_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: prog2review-secrets
+                  name: vival-secrets
                   key: ELEVENLABS_API_KEY
             - name: ELEVENLABS_AGENT_ID
               valueFrom:
                 secretKeyRef:
-                  name: prog2review-secrets
+                  name: vival-secrets
                   key: ELEVENLABS_AGENT_ID
             - name: ELEVENLABS_WEBHOOK_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: prog2review-secrets
+                  name: vival-secrets
                   key: ELEVENLABS_WEBHOOK_SECRET
             - name: BASE_URL
               value: "https://prog2review.dsv.su.se"
             - name: MAIL_USER
               valueFrom:
                 secretKeyRef:
-                  name: prog2review-secrets
+                  name: vival-secrets
                   key: MAIL_USER
             - name: MAIL_PASS
               valueFrom:
                 secretKeyRef:
-                  name: prog2review-secrets
+                  name: vival-secrets
                   key: MAIL_PASS
           resources:
             requests:
@@ -99,12 +97,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: prog2review-app
-  namespace: prog2review
+  name: vival-app
+  namespace: vival
 spec:
   type: NodePort
   selector:
-    app: prog2review-app
+    app: vival-app
   ports:
     - port: 3000
       targetPort: 3000

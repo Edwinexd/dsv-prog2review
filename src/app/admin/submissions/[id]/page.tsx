@@ -35,8 +35,6 @@ interface ReviewData {
     filename: string | null;
     file_content: string | null;
     status: string;
-    compile_success: boolean | null;
-    compile_errors: Array<{ file: string; line: number; message: string; type: string }> | null;
   };
 }
 
@@ -228,9 +226,6 @@ export default function SubmissionDetailPage() {
     uploaded_at: "",
   };
 
-  // Get line numbers with compilation errors for highlighting
-  const errorLines = reviewData?.submission.compile_errors?.map(e => e.line) || [];
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -311,32 +306,12 @@ export default function SubmissionDetailPage() {
           <Card>
             <CardHeader>
               <CardTitle>{displaySubmission.filename || "Source Code"}</CardTitle>
-              {reviewData?.submission.compile_success === false && (
-                <CardDescription className="text-destructive">
-                  Compilation failed
-                </CardDescription>
-              )}
             </CardHeader>
             <CardContent>
-              {reviewData?.submission.compile_success === false &&
-                reviewData.submission.compile_errors &&
-                reviewData.submission.compile_errors.length > 0 && (
-                  <div className="mb-4 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
-                    <p className="text-sm font-medium text-destructive mb-2">
-                      Compilation Errors
-                    </p>
-                    {reviewData.submission.compile_errors.map((err, i) => (
-                      <div key={i} className="text-sm font-mono text-destructive/80">
-                        {err.file}:{err.line} - {err.message}
-                      </div>
-                    ))}
-                  </div>
-                )}
               {reviewData?.submission.file_content ? (
                 <CodeViewer
                   code={reviewData.submission.file_content}
                   filename={displaySubmission.filename}
-                  highlightLines={errorLines}
                 />
               ) : (
                 <div className="p-4 bg-muted rounded-lg text-muted-foreground text-center">

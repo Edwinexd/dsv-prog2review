@@ -53,11 +53,6 @@ function detectLanguage(filename: string | null): LanguageInfo {
   return LANGUAGE_MAP[ext] || { name: "programming", codeBlockLang: "" };
 }
 
-export function isJavaFile(filename: string | null): boolean {
-  if (!filename) return false;
-  return filename.toLowerCase().endsWith(".java");
-}
-
 function log(level: 'info' | 'warn' | 'error', message: string, data?: Record<string, unknown>) {
   const timestamp = new Date().toISOString();
   const prefix = `[${timestamp}] [openai] [${level.toUpperCase()}]`;

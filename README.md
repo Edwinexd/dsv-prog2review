@@ -1,6 +1,10 @@
-# prog2review
+# Vival
 
-Automated code review and oral examination system for Stockholm University programming courses.
+<p align="center">
+  <img src="public/vival_color.png" alt="Vival Logo" width="200">
+</p>
+
+AI-powered code review and oral examination system.
 
 ## Overview
 
@@ -38,7 +42,7 @@ npm run dev
 Copy `.env.example` to `.env.local` and fill in:
 
 ```env
-DATABASE_URL=postgresql://prog2review:prog2review@localhost:5432/prog2review
+DATABASE_URL=postgresql://vival:vival@localhost:5432/vival
 REDIS_URL=redis://localhost:6379
 ID_GENERATOR_URL=http://localhost:8080
 OPENAI_API_KEY=sk-...

@@ -43,8 +43,6 @@ export async function GET(request: NextRequest, { params }: Params) {
         filename: submission.filename,
         file_content: submission.file_content,
         status: submission.status,
-        compile_success: submission.compile_success,
-        compile_errors: submission.compile_errors,
       },
     });
   } catch (err) {

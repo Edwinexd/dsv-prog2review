@@ -12,8 +12,11 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "DSV Prog2 Review",
-  description: "Oral examination system for Programming 2 course at Stockholm University",
+  title: "Vival",
+  description: "AI-powered code review and oral examination system",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default async function RootLayout({

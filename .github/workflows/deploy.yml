@@ -50,12 +50,12 @@ jobs:
       - name: Deploy to Kubernetes
         run: |
           kubectl apply -k k8s/overlays/prod
-          kubectl rollout restart deployment/prog2review-app -n prog2review
-          kubectl rollout status deployment/prog2review-app -n prog2review --timeout=300s
+          kubectl rollout restart deployment/vival-app -n vival
+          kubectl rollout status deployment/vival-app -n vival --timeout=300s
 
       - name: Run database migrations
         run: |
-          kubectl exec -n prog2review deployment/prog2review-app -- npx tsx src/lib/db/migrate.ts
+          kubectl exec -n vival deployment/vival-app -- npx tsx src/lib/db/migrate.ts
 
       - name: Teardown
         if: always()

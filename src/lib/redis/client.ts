@@ -34,4 +34,4 @@ export async function closeRedisConnection(): Promise<void> {
   }
 }
 
-export const KEY_PREFIX = "prog2review";
+export const KEY_PREFIX = "vival";

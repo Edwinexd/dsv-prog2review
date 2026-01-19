@@ -2,7 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: postgres-pvc
-  namespace: prog2review
+  namespace: vival
 spec:
   accessModes:
     - ReadWriteOnce
@@ -14,7 +14,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres
-  namespace: prog2review
+  namespace: vival
 spec:
   replicas: 1
   selector:
@@ -34,15 +34,15 @@ spec:
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: prog2review-secrets
+                  name: vival-secrets
                   key: POSTGRES_USER
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: prog2review-secrets
+                  name: vival-secrets
                   key: POSTGRES_PASSWORD
             - name: POSTGRES_DB
-              value: prog2review
+              value: vival
           volumeMounts:
             - name: postgres-data
               mountPath: /var/lib/postgresql/data
@@ -58,7 +58,7 @@ spec:
               command:
                 - pg_isready
                 - -U
-                - prog2review
+                - vival
             initialDelaySeconds: 5
             periodSeconds: 5
       volumes:
@@ -70,7 +70,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres
-  namespace: prog2review
+  namespace: vival
 spec:
   selector:
     app: postgres

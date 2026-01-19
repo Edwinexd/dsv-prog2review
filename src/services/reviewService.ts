@@ -1,4 +1,4 @@
-import { reviewCode, isJavaFile } from "@/lib/openai";
+import { reviewCode } from "@/lib/openai";
 import { generateId } from "@/lib/id";
 import { acquireGptSemaphore, releaseGptSemaphore } from "@/lib/redis/semaphore";
 import {
@@ -11,7 +11,6 @@ import {
   type Review,
   type Assignment,
 } from "@/lib/db/queries";
-import { compileSubmission, formatCompilationErrorsForReview } from "./compilationService";
 
 function log(level: 'info' | 'warn' | 'error', message: string, data?: Record<string, unknown>) {
   const timestamp = new Date().toISOString();
@@ -62,22 +61,7 @@ export async function processSubmissionReview(submissionId: string): Promise<Rev
   try {
     await updateSubmissionStatus(submissionId, "reviewing");
 
-    // Build review prompt, optionally with compilation context for Java files
     let reviewPrompt = assignment.review_prompt || "";
-
-    // Only run compilation check for Java files
-    if (isJavaFile(submission.filename)) {
-      log('info', `Running compilation check (Java file)`, { submissionId, filename: submission.filename });
-      const compilationResult = await compileSubmission(submissionId);
-      log('info', `Compilation result`, { submissionId, success: compilationResult.success, errorCount: compilationResult.errors?.length || 0 });
-
-      if (!compilationResult.success) {
-        const compilationContext = formatCompilationErrorsForReview(compilationResult);
-        reviewPrompt = `IMPORTANT: The code failed to compile. Here are the compilation errors:\n${compilationContext}\n\nPlease review the code and address these compilation errors in your feedback.\n\n${reviewPrompt}`;
-      }
-    } else {
-      log('info', `Skipping compilation (non-Java file)`, { submissionId, filename: submission.filename });
-    }
 
     // Check if content has file markers (multi-file submission)
     const hasFileMarkers = /^\/\/\s*=====\s*.+?\s*=====\s*$/m.test(submission.file_content);
