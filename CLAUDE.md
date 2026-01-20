@@ -81,6 +81,31 @@ See `.env.example` for required variables:
 - `JWT_SECRET` - Secret for JWT signing (generate random string)
 - `ADMIN_USERNAMES` - Comma-separated admin usernames (matched without domain suffix, e.g., "bbohm" matches "bbohm@SU.SE")
 
+## Production Storage (/data0)
+
+All persistent data in production is stored on the `/data0` mount:
+
+```
+/data0/vival/
+├── postgres/     # PostgreSQL data directory
+├── redis/        # Redis AOF persistence
+└── backups/      # Daily PostgreSQL dumps (14 days retention)
+```
+
+**Backup CronJob:**
+- Runs daily at 03:00 UTC via k8s CronJob (`k8s/base/backup.yaml`)
+- Creates gzipped pg_dump: `vival-YYYY-MM-DD_HHMMSS.sql.gz`
+- Retains last 14 backups automatically
+
+**Restore from backup:**
+```bash
+# List available backups
+ls -la /data0/vival/backups/
+
+# Restore (replace DATE with actual backup date)
+gunzip -c /data0/vival/backups/vival-DATE.sql.gz | kubectl exec -i -n vival deploy/postgres -- psql -U vival -d vival
+```
+
 ## File Structure
 
 ```
